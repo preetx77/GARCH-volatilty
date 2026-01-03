@@ -1,171 +1,66 @@
-📊 Real-Time Volatility & Risk Engine (Python + MetaTrader 5)
-Overview
+# **Real-Time Volatility & Risk Engine (MT5 + Python)**
 
-This project implements a real-time quantitative risk and volatility engine designed to bridge Python-based quantitative models with MetaTrader 5.
+A quantitative risk and volatility analysis engine built using Python for modeling and MetaTrader 5 for market integration, designed to replicate an institutional-style workflow for volatility forecasting, regime detection, tail risk estimation, and derivative pricing.
 
-The system computes market risk metrics such as:
+This project focuses on robust probabilistic modeling, not indicator-based guessing.
 
-Rolling volatility
+# Project Overview
 
-GARCH-based volatility
+This system ingests live market data from MetaTrader 5, processes it in Python, and produces real-time risk metrics that can be consumed by trading platforms or dashboards.
+The architecture mirrors how buy-side and quant desks separate:
+data ingestion
+statistical modeling
+execution / visualization layers
 
-Tail risk (VaR & Expected Shortfall)
+# **🧠 Core Concepts Implemented**
 
+Log-return based volatility modeling
+Rolling volatility (annualized)
+GARCH(1,1) conditional volatility
 Volatility regime classification
-
-Option pricing using model-implied volatility
-
-The architecture is intentionally modular, separating:
-
-Quantitative modeling (Python)
-
-Data transport (file-based bridge)
-
-Execution / visualization layer (MT5)
-
-This mirrors how many real-world trading and risk systems are structured.
-
-System Architecture
-Market Data (MT5)
-        ↓
-Python Quant Engine
-        ↓
-Risk Snapshot (JSON)
-        ↓
-MetaTrader 5 EA / Dashboard
-
-Why this design?
-
-Python is better suited for numerical methods, statistics, and ML
-
-MT5 is better suited for market connectivity and execution
-
-A decoupled bridge avoids tight coupling and improves robustness
-
-Features
-Quantitative Engine (Python)
-
-Log-return computation
-
-Rolling volatility estimation
-
-GARCH(1,1) volatility modeling
-
-Volatility regime detection (LOW / NORMAL / STRESS)
-
-Tail risk metrics:
-
+Low volatility
+Normal volatility
+Stress / expansion regimes
+Tail risk metrics
 Value at Risk (VaR)
-
 Expected Shortfall (ES)
+Derivative pricing
+Black–Scholes call pricing
+Monte Carlo pricing with volatility stress testing
 
-Black–Scholes option pricing using model-implied volatility
-
-Monte Carlo stress testing (optional module)
-
-Real-Time Data Bridge
-
-Writes live risk snapshots to JSON
-
-Designed to be MT5-readable (MQL5/Files)
-
-Stateless, restart-safe, and debuggable
-
-MetaTrader Integration
-
-EA-based dashboard (chosen over indicators for stability)
-
-Designed to display:
-
-Spot price
-
-Volatility metrics
-
-Risk regime
-
-Tail risk statistics
-
-Architecture supports live updates via timers
-
-Note: Due to a MetaTrader 5 terminal execution issue on the development environment, EA execution is currently documented but not active. This does not affect the Python engine or system design.
-
-Project Structure
-volatility/
-│
-├── core_engine.py        # Core risk & volatility computation
-├── garch.py              # GARCH model experiments
-├── returns.py            # Return & volatility preprocessing
-├── data.csv              # Sample historical data
-│
-├── RiskDashboardEA.mq5   # MT5 Expert Advisor (dashboard layer)
-│
-└── README.md
-
-Technologies Used
-
-Python
-
-pandas
-
-numpy
-
-arch (GARCH models)
-
-scipy
+# **🏗️ System Architecture**
 
 MetaTrader 5
+   │
+   ├── Live OHLCV Data
+   │
+Python Quant Engine
+   │
+   ├── Return computation
+   ├── Volatility estimation
+   ├── GARCH modeling
+   ├── Risk metrics (VaR / ES)
+   ├── Option pricing
+   │
+   └── JSON Snapshot Output
+           │
+           └── MT5-readable interface (EA / dashboard layer)
 
-MQL5 (Expert Advisor)
+# 🧪 Why This Is Not a “Basic Volatility Project”
 
-Quantitative Finance
+No indicators (RSI, MACD, etc.)
+No curve-fitting for accuracy screenshots
+No single-number predictions
+Instead, the system emphasizes:
+distribution-aware modeling
+risk-adjusted thinking
+regime sensitivity
+stress behavior
+This is closer to how risk is actually evaluated in professional environments.
 
-Time-series analysis
-
-Volatility modeling
-
-Tail risk metrics
-
-Option pricing theory
-
-What This Project Demonstrates
-
-Practical understanding of market volatility dynamics
-
-Application of GARCH models beyond theory
-
-Awareness of tail risk and distributional behavior
-
-Experience with cross-language system integration
-
-Real-world debugging of trading platforms (not just toy code)
-
-This is not a toy indicator or a backtest-only script.
-It is a foundation for a production-style risk engine.
-
-Known Limitations
-
-MT5 EA execution is currently blocked due to a terminal-level issue on the development machine.
-
-The issue is environmental, not architectural, and is documented for transparency.
-
-The Python engine and data pipeline are fully functional and platform-independent.
-
-Future Extensions
-
-Regime-aware strategy weighting
-
-Greeks and volatility surface estimation
-
-Monte Carlo PnL distributions
-
-Order-flow and bid/ask integration
-
-Web-based dashboard (Streamlit / Dash)
-
-Broker-agnostic execution layer
-
-Disclaimer
-
-This project is for research and educational purposes only.
-It does not constitute financial advice or a trading recommendation.
-
+🚧 **Current Status**
+✅ Python quant engine fully functional
+✅ Live MT5 data ingestion verified
+✅ Risk metrics and pricing validated
+⚠️ MT5 visualization layer depends on terminal execution state(engine is platform-ready; UI layer can be attached or replaced)
+The project is intentionally modular so the core logic remains usable regardless of platform quirks.
