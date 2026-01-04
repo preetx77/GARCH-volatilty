@@ -72,8 +72,66 @@ plt.show()
 window = 20
 df["rolling_vol"] = df["log_return"].rolling(window).std() * np.sqrt(252)
 
+def detect_vol_regime(vol_series, current_vol):
+    """
+    Classify volatility regime using quantiles.
+    """
+    if len(vol_series.dropna()) < 50:
+        return "INSUFFICIENT_DATA"
+
+    low_q = vol_series.quantile(0.33)
+    high_q = vol_series.quantile(0.66)
+
+    if current_vol < low_q:
+        return "LOW_VOL"
+    elif current_vol < high_q:
+        return "NORMAL_VOL"
+    else:
+        return "STRESS_VOL"
+
 print("\nRolling vol preview:")
 print(df["rolling_vol"].dropna().head())
+
+# -----------------------------
+# 8. Volatility regime labeling
+# -----------------------------
+df["vol_regime"] = None
+
+for i in range(len(df)):
+    current_vol = df["rolling_vol"].iloc[i]
+    hist_vol = df["rolling_vol"].iloc[:i]
+
+    df.iloc[i, df.columns.get_loc("vol_regime")] = detect_vol_regime(
+        hist_vol, current_vol
+    )
+
+# -----------------------------
+# 9. Plot volatility with regimes
+# -----------------------------
+plt.figure(figsize=(12, 5))
+
+colors = {
+    "LOW_VOL": "green",
+    "NORMAL_VOL": "orange",
+    "STRESS_VOL": "red",
+    "INSUFFICIENT_DATA": "gray"
+}
+
+for regime, color in colors.items():
+    mask = df["vol_regime"] == regime
+    plt.scatter(
+        df.index[mask],
+        df.loc[mask, "rolling_vol"],
+        label=regime,
+        color=color,
+        s=10
+    )
+
+plt.plot(df["rolling_vol"], color="black", alpha=0.4)
+plt.title("Rolling Volatility with Regime Classification")
+plt.legend()
+plt.show()
+
 
 # -----------------------------
 # 8. Plot volatility
