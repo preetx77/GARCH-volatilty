@@ -1,66 +1,171 @@
-# **Real-Time Volatility & Risk Engine (MT5 + Python)**
+# GARCH Volatility Regime Analysis
 
-A quantitative risk and volatility analysis engine built using Python for modeling and MetaTrader 5 for market integration, designed to replicate an institutional-style workflow for volatility forecasting, regime detection, tail risk estimation, and derivative pricing.
+This project focuses on **volatility regime analysis** using financial time series data, with a particular emphasis on **GARCH-based modeling** to understand how market risk evolves across different volatility states.
 
-This project focuses on robust probabilistic modeling, not indicator-based guessing.
+Rather than predicting price direction, the project studies **risk behavior**, **volatility clustering**, and **tail behavior** under different regimes.
 
-# Project Overview
+---
 
-This system ingests live market data from MetaTrader 5, processes it in Python, and produces real-time risk metrics that can be consumed by trading platforms or dashboards.
-The architecture mirrors how buy-side and quant desks separate:
-data ingestion
-statistical modeling
-execution / visualization layers
+## Project Objective
 
-# **🧠 Core Concepts Implemented**
+- Analyze how volatility behaves across different market regimes
+- Classify markets into **Low**, **Normal**, and **Stress** volatility states
+- Measure how risk, persistence, and tail losses change across regimes
+- Apply **GARCH(1,1)** models within each regime to quantify volatility dynamics
+- Demonstrate why a single volatility model can underestimate risk
 
-Log-return based volatility modeling
-Rolling volatility (annualized)
-GARCH(1,1) conditional volatility
-Volatility regime classification
-Low volatility
-Normal volatility
-Stress / expansion regimes
-Tail risk metrics
-Value at Risk (VaR)
-Expected Shortfall (ES)
-Derivative pricing
-Black–Scholes call pricing
-Monte Carlo pricing with volatility stress testing
+---
 
-# **🏗️ System Architecture**
+## Dataset
 
-MetaTrader 5
-   │
-   ├── Live OHLCV Data
-   │
-Python Quant Engine
-   │
-   ├── Return computation
-   ├── Volatility estimation
-   ├── GARCH modeling
-   ├── Risk metrics (VaR / ES)
-   ├── Option pricing
-   │
-   └── JSON Snapshot Output
-           │
-           └── MT5-readable interface (EA / dashboard layer)
+- Instrument: **XAUUSD (Gold)**
+- Data Type: Historical price data
+- Frequency: Depends on data source (daily / intraday)
+- Input Fields:
+  - Timestamp
+  - Open / High / Low / Close (OHLC)
 
-# 🧪 Why This Is Not a “Basic Volatility Project”
+Gold is used because it is **highly sensitive to volatility shocks** and displays clear regime transitions.
 
-No indicators (RSI, MACD, etc.)
-No curve-fitting for accuracy screenshots
-No single-number predictions
-Instead, the system emphasizes:
-distribution-aware modeling
-risk-adjusted thinking
-regime sensitivity
-stress behavior
-This is closer to how risk is actually evaluated in professional environments.
+---
 
-🚧 **Current Status**
-✅ Python quant engine fully functional
-✅ Live MT5 data ingestion verified
-✅ Risk metrics and pricing validated
-⚠️ MT5 visualization layer depends on terminal execution state(engine is platform-ready; UI layer can be attached or replaced)
-The project is intentionally modular so the core logic remains usable regardless of platform quirks.
+## Repository Structure & Explanation
+
+### 1. Data Loading & Preprocessing
+
+**Purpose**
+- Load raw historical price data
+- Clean missing or inconsistent values
+- Prepare data for volatility analysis
+
+**What this part does**
+- Reads price data into pandas DataFrames
+- Computes **log returns**
+- Removes NaNs introduced by return calculations
+- Ensures time series consistency
+
+**Why it matters**
+Volatility modeling is extremely sensitive to data quality. Clean returns are the foundation of all further analysis.
+
+---
+
+### 2. Rolling Volatility Computation
+
+**Purpose**
+- Measure short-term volatility behavior
+
+**What this part does**
+- Computes rolling standard deviation of log returns
+- Uses a fixed rolling window (e.g., 20 periods)
+- Produces a time-varying volatility series
+
+**Why it matters**
+Rolling volatility provides a **real-time view of risk buildup** and helps identify regime boundaries.
+
+---
+
+### 3. Volatility Regime Classification
+
+**Purpose**
+- Segment the market into distinct volatility states
+
+**What this part does**
+- Uses volatility **quantiles** to classify regimes:
+  - Low Volatility Regime
+  - Normal Volatility Regime
+  - Stress / High Volatility Regime
+- Assigns a regime label to each time period
+
+**Why it matters**
+Markets do not behave uniformly. Risk, drawdowns, and persistence differ significantly across regimes.
+
+---
+
+### 4. Regime-Based Return & Risk Analysis
+
+**Purpose**
+- Compare risk characteristics across regimes
+
+**What this part does**
+- Computes return distributions for each regime
+- Analyzes:
+  - Mean returns
+  - Volatility levels
+  - Tail losses (extreme negative returns)
+- Highlights how stress regimes amplify downside risk
+
+**Why it matters**
+This shows why treating all periods with a single risk model leads to **systematic underestimation of risk**.
+
+---
+
+### 5. Volatility Persistence Analysis
+
+**Purpose**
+- Measure how long volatility shocks last
+
+**What this part does**
+- Studies autocorrelation and clustering of volatility
+- Identifies persistence differences between regimes
+- Shows that volatility decays slower in stress regimes
+
+**Why it matters**
+Persistence determines how long elevated risk stays in the system, directly impacting position sizing and risk control.
+
+---
+
+### 6. GARCH(1,1) Modeling by Regime
+
+**Purpose**
+- Quantify volatility dynamics mathematically
+
+**What this part does**
+- Fits separate **GARCH(1,1)** models for each volatility regime
+- Extracts:
+  - Alpha (reaction to new shocks)
+  - Beta (volatility persistence)
+- Compares parameter stability across regimes
+
+**Why it matters**
+GARCH parameters vary significantly by regime, proving that **one global GARCH model is structurally flawed**.
+
+---
+
+### 7. Results & Key Observations
+
+**Main findings**
+- Stress regimes exhibit:
+  - Much higher tail risk
+  - Stronger volatility clustering
+  - Slower mean reversion
+- Low-volatility regimes show:
+  - Faster decay of shocks
+  - Lower downside risk
+- Volatility is **regime-dependent**, not stationary
+
+---
+
+## Technologies Used
+
+- Python
+- pandas
+- numpy
+- matplotlib / seaborn
+- arch (for GARCH modeling)
+- scipy / statsmodels
+
+---
+
+## How to Run the Project
+
+1. Clone the repository
+git clone https://github.com/preetx77/GARCH-volatilty.git
+
+Install dependencies
+pip install -r requirements.txt
+Run analysis scripts in sequence:
+
+Data preprocessing
+Volatility computation
+Regime classification
+GARCH modeling ```
