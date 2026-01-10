@@ -18,7 +18,6 @@ T_EXPIRY = 30 / 365
 
 MT5_FILES_DIR = r"C:\Users\LENOVO\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Files\Common"
 
-
 # =============================
 # MT5 INIT
 # =============================
