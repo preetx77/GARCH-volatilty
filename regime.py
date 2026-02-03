@@ -176,7 +176,8 @@ for regime in ["LOW_VOL", "NORMAL_VOL", "STRESS_VOL"]:
         vol="Garch",
         rescale=False
     )
-
+# alpha modeling
+    
     res = model.fit(disp="off")
 
     alpha = res.params["alpha[1]"]
